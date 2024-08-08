@@ -1,26 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
+import React from "react";
 import './App.css';
+import Link from "./components/Link";
 
-function App() {
+const App: React.FC = (): React.ReactElement => {
+  const [linkToken, setLinkToken] = React.useState(null);
+
+  const generateToken = async () => {
+    const response = await fetch('http://localhost:3001/plaid/create-link-token', {
+      method: 'POST',
+    });
+    const data = await response.json();
+    setLinkToken(data.link_token);
+  };
+  
+  React.useEffect(() => {
+    generateToken();
+  }, []);
+  
+  console.log("Link token state: ", linkToken);
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <div className="heading">Create Your Account With Plaid</div>
+        {linkToken != null ? <Link linkToken={linkToken} /> : <></>}
       </header>
     </div>
   );
-}
+};
 
 export default App;
